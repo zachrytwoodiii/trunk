@@ -1,17 +1,328 @@
-'#' ## Run:: trunk
+'#'''##'':Run::'::On':'[trunk]''
 # Name:: BITORE
-# Pull::
-# Request::
-# #Name: Run a Multi One Line Script"
+#Request::{
+    "name": "my-electron-app",
+    "version": "0.1.0",
+    "author": "your name",
+    "description": "My Electron app",
+    "main": "main.js"
+}
+Copy
+NOTE: If the main field is omitted, Electron will attempt to load an index.js file from the directory containing package.json.
+
+NOTE: The author and description fields are required for packaging, otherwise error will occur when running npm run make.
+
+By default, the npm start command will run the main script with Node.js. To run the script with Electron, you need to change it as such:
+
+{
+    "name": "my-electron-app",
+    "version": "0.1.0",
+    "author": "your name",
+    "description": "My Electron app",
+    "main": "main.js",
+    "scripts": {
+        "start": "electron ."
+    }
+}
+Copy
+Run your application
+npm start
+Copy
+Your running Electron app should look as follows:
+
+Simplest Electron app
+
+Package and distribute the application
+The simplest and the fastest way to distribute your newly created app is using Electron Forge.
+
+Import Electron Forge to your app folder:
+
+npm install --save-dev @electron-forge/cli
+npx electron-forge import
+
+✔ Checking your system
+✔ Initializing Git Repository
+✔ Writing modified package.json file
+✔ Installing dependencies
+✔ Writing modified package.json file
+✔ Fixing .gitignore
+
+We have ATTEMPTED to convert your app to be in a format that electron-forge understands.
+
+Thanks for using "electron-forge"!!!
+Copy
+Create a distributable:
+
+npm run make
+
+> my-gsod-electron-app@1.0.0 make /my-electron-app
+> electron-forge make
+
+✔ Checking your system
+✔ Resolving Forge Config
+We need to package your application before we can make it
+✔ Preparing to Package Application for arch: x64
+✔ Preparing native dependencies
+✔ Packaging Application
+Making for the following targets: zip
+✔ Making for target: zip - On platform: darwin - For arch: x64
+Copy
+Electron-forge creates the out folder where your package will be located:
+
+// Example for MacOS
+out/
+├── out/make/zip/darwin/x64/my-electron-app-darwin-x64-1.0.0.zip
+├── ...
+└── out/my-electron-app-darwin-x64/my-electron-app.app/Contents/MacOS/my-electron-app
+Copy
+Learning the basics
+This section guides you through the basics of how Electron works under the hood. It aims at strengthening knowledge about Electron and the application created earlier in the Quickstart section.
+
+Application architecture
+Electron consists of three main pillars:
+
+Chromium for displaying web content.
+Node.js for working with the local filesystem and the operating system.
+Custom APIs for working with often-needed OS native functions.
+Developing an application with Electron is like building a Node.js app with a web interface or building web pages with seamless Node.js integration.
+
+Main and Renderer Processes
+As it was mentioned before, Electron has two types of processes: Main and Renderer.
+
+The Main process creates web pages by creating BrowserWindow instances. Each BrowserWindow instance runs the web page in its Renderer process. When a BrowserWindow instance is destroyed, the corresponding Renderer process gets terminated as well.
+The Main process manages all web pages and their corresponding Renderer processes.
+The Renderer process manages only the corresponding web page. A crash in one Renderer process does not affect other Renderer processes.
+The Renderer process communicates with the Main process via IPC to perform GUI operations in a web page. Calling native GUI-related APIs from the Renderer process directly is restricted due to security concerns and potential resource leakage.
+The communication between processes is possible via Inter-Process Communication (IPC) modules: ipcMain and ipcRenderer.
+
+APIs
+Electron API
+Electron APIs are assigned based on the process type, meaning that some modules can be used from either the Main or Renderer process, and some from both. Electron's API documentation indicates which process each module can be used from.
+
+For example, to access the Electron API in both processes, require its included module:
+
+const electron = require('electron')
+Copy
+To create a window, call the BrowserWindow class, which is only available in the Main process:
+
+const { BrowserWindow } = require('electron')
+const win = new BrowserWindow()
+Copy
+To call the Main process from the Renderer, use the IPC module:
+
+// In the Main process
+const { ipcMain } = require('electron')
+
+ipcMain.handle('perform-action', (event, ...args) => {
+  // ... do actions on behalf of the Renderer
+})
+Copy
+// In the Renderer process
+const { ipcRenderer } = require('electron')
+
+ipcRenderer.invoke('perform-action', ...args)
+Copy
+NOTE: Because Renderer processes may run untrusted code (especially from third parties), it is important to carefully validate the requests that come to the Main process.
+
+Node.js API
+NOTE: To access the Node.js API from the Renderer process, you need to set the nodeIntegration preference to true and the contextIsolation preference to false. Please note that access to the Node.js API in any renderer that loads remote content is not recommended for security reasons.
+
+Electron exposes full access to Node.js API and its modules both in the Main and the Renderer processes. For example, you can read all the files from the root directory:
+
+const fs = require('fs')
+
+const root = fs.readdirSync('/')
+
+console.log(root)
+Copy
+To use a Node.js module, you first need to install it as a dependency:
+
+npm install --save aws-sdk
+Copy
+Then, in your Electron application, require the module:
+
+const S3 = require('aws-sdk/clients/s3')
+# Pulls:'npm.node/install --save-dev @electron-forge/cliang/-curl/purl/thimbal/node.js/atom/electron.api/adk/sdk/.s.e./jdk.R.E/vscode/nnode/ruby.yam.api/electron-ags/aadk/sdk/install/::import::thr.pdf.export
+# Export:''
+✔ Checking your system
+✔ Initializing Git Repository
+✔ Writing modified package.json file
+✔ Installing dependencies::{
+    "name": "my-electron-app",
+    "version": "0.1.0",
+    "author": "your name",
+    "description": "My Electron app",
+    "main": "main.js"
+}
+Copy
+NOTE: If the main field is omitted, Electron will attempt to load an index.js file from the directory containing package.json.
+
+NOTE: The author and description fields are required for packaging, otherwise error will occur when running npm run make.
+
+By default, the npm start command will run the main script with Node.js. To run the script with Electron, you need to change it as such:
+
+{
+    "name": "my-electron-app",
+    "version": "0.1.0",
+    "author": "your name",
+    "description": "My Electron app",
+    "main": "main.js",
+    "scripts": {
+        "start": "electron ."
+    }
+}
+Copy
+Run your application
+npm start
+Copy
+Your running Electron app should look as follows:
+
+Simplest Electron app
+
+Package and distribute the application
+The simplest and the fastest way to distribute your newly created app is using Electron Forge.
+
+Import Electron Forge to your app folder:
+
+npm install --save-dev @electron-forge/cli
+npx electron-forge import
+
+✔ Checking your system
+✔ Initializing Git Repository
+✔ Writing modified package.json file
+✔ Installing dependencies
+✔ Writing modified package.json file
+✔ Fixing .gitignore
+
+We have ATTEMPTED to convert your app to be in a format that electron-forge understands.
+
+Thanks for using "electron-forge"!!!
+Copy
+Create a distributable:
+
+npm run make
+
+> my-gsod-electron-app@1.0.0 make /my-electron-app
+> electron-forge make
+
+✔ Checking your system
+✔ Resolving Forge Config
+We need to package your application before we can make it
+✔ Preparing to Package Application for arch: x64
+✔ Preparing native dependencies
+✔ Packaging Application
+Making for the following targets: zip
+✔ Making for target: zip - On platform: darwin - For arch: x64
+Copy
+Electron-forge creates the out folder where your package will be located:
+
+// Example for MacOS
+out/
+├── out/make/zip/darwin/x64/my-electron-app-darwin-x64-1.0.0.zip
+├── ...
+└── out/my-electron-app-darwin-x64/my-electron-app.app/Contents/MacOS/my-electron-app
+Copy
+Learning the basics
+This section guides you through the basics of how Electron works under the hood. It aims at strengthening knowledge about Electron and the application created earlier in the Quickstart section.
+
+Application architecture
+Electron consists of three main pillars:
+
+Chromium for displaying web content.
+Node.js for working with the local filesystem and the operating system.
+Custom APIs for working with often-needed OS native functions.
+Developing an application with Electron is like building a Node.js app with a web interface or building web pages with seamless Node.js integration.
+
+Main and Renderer Processes
+As it was mentioned before, Electron has two types of processes: Main and Renderer.
+
+The Main process creates web pages by creating BrowserWindow instances. Each BrowserWindow instance runs the web page in its Renderer process. When a BrowserWindow instance is destroyed, the corresponding Renderer process gets terminated as well.
+The Main process manages all web pages and their corresponding Renderer processes.
+The Renderer process manages only the corresponding web page. A crash in one Renderer process does not affect other Renderer processes.
+The Renderer process communicates with the Main process via IPC to perform GUI operations in a web page. Calling native GUI-related APIs from the Renderer process directly is restricted due to security concerns and potential resource leakage.
+The communication between processes is possible via Inter-Process Communication (IPC) modules: ipcMain and ipcRenderer.
+
+APIs
+Electron API
+Electron APIs are assigned based on the process type, meaning that some modules can be used from either the Main or Renderer process, and some from both. Electron's API documentation indicates which process each module can be used from.
+
+For example, to access the Electron API in both processes, require its included module:
+
+const electron = require('electron')
+Copy
+To create a window, call the BrowserWindow class, which is only available in the Main process:
+
+const { BrowserWindow } = require('electron')
+const win = new BrowserWindow()
+Copy
+To call the Main process from the Renderer, use the IPC module:
+
+// In the Main process
+const { ipcMain } = require('electron')
+
+ipcMain.handle('perform-action', (event, ...args) => {
+  // ... do actions on behalf of the Renderer
+})
+Copy
+// In the Renderer process
+const { ipcRenderer } = require('electron')
+
+ipcRenderer.invoke('perform-action', ...args)
+Copy
+NOTE: Because Renderer processes may run untrusted code (especially from third parties), it is important to carefully validate the requests that come to the Main process.
+
+Node.js API
+NOTE: To access the Node.js API from the Renderer process, you need to set the nodeIntegration preference to true and the contextIsolation preference to false. Please note that access to the Node.js API in any renderer that loads remote content is not recommended for security reasons.
+
+Electron exposes full access to Node.js API and its modules both in the Main and the Renderer processes. For example, you can read all the files from the root directory:
+
+const fs = require('fs')
+
+const root = fs.readdirSync('/')
+
+console.log(root)
+Copy
+To use a Node.js module, you first need to install it as a dependency:
+
+npm install --save aws-sdk
+Copy
+Then, in your Electron application, require the module:
+
+const S3 = require('aws-sdk/clients/s3')
+✔ Writing modified package.json file
+✔ Fixing .gitignore
+# Create a Contributaion:deno/python.javascript/linux32xarm64/windowXpx32x64/
+# run:: 
+# makefile:$RubyGems.Gemfile/Gem.spec.rust.u
+> my-gsod-electron-app@1.0.0 make /my-electron-app
+> electron-forge make
+✔ Checking your system
+✔ Resolving Forge Config
+We need to package your application before we can make it
+✔ Preparing to Package Application for arch: x64
+✔ Preparing native dependencies
+✔ Packaging Application
+Making for the following targets: zip
+✔ Making for target: zip - On platform: darwin - For arch: x64
+Copy
+Electron-forge creates the out folder where your package will be located:
+Example or MacOS
+out
+├── out/make/zip/darwin/x64/my-electron-app-darwin-x64-1.0.0.zip
+├── ...
+└── out/my-electron-app-darwin-x64/my-electron-app.app/Contents/MacOS/my-electron-app
+'#'##On:''#Run::#Automate::'::Job:Steps:'::Const:'''Name'':Deploy-to-:Heroku-RunWizard:install-ZW-Arm/Bump/test/Package.json/:DependaBotRunWizard::Deploy::to::'::''Automate::'"::Fix:':All''::Perfect:'All'''Perfect:''''Run::'::run'@iixixi/user/bin/repositories/package.json''"'#Automate::''On::''Run::''Script''::Masifest:''#''Request''_''Pull::''"'energy'"'#Request::#Push::'''energy"'''@ZachryTylerWood@Administrator@.git.it/user/bin/bash!#:TIERRAFORMA::xshapeSHIFTS::''script''DOCKER.Gui:type:trpositories''@''User/bin/BITORE.sig/package.json/Automate:'::Automergel::[image](https://user-images.githubusercontent.com/72369414/113492970-1b15ef80-94a1-11eb-9b4e-bc28f2595c32.yml.xslvnx.json.png::Automate:'::Const:'::Build::Deployee::Launch::''@'IIxixi/repositoreies/user/bin/BITORE/ZachryTylerWood.sig/Package.yaml::run:::#Push::Magic::''@iixixi'/'IIxixii'"#:Manifest:'::MAgic::Const::#Push::Magic::'@:'''''#:On::''"'#:Command::'''"''Return::"On''''Run::''Automate::On::''
+'#Request::
+#Name: Run a Multi line one build Script:: Manifiest::''#:Pushs"":Magic::"from'Command''Line''::Build::''
 '#documentation.
-'#Name:'#Manifest::##Run::version: 2
+'#Name:''
+# Manifest::'Automates:Bump::DependabotRunwWzard:DependabB:'::to:Fix::''All:''#Automate::''Deploy::Name::Launch::DependaBot::@'build''script''::Automate:'# Perfect:''Alll:::##Run::version: 2
 'updates:'
-  'package-ecosystem:Gemmfile.pkg'/Ruby.yaml'{'$'{Gem.spec'}'.yaml'/test'/package.json'
+  'package-ecosystem:Gemmfile.pkg''/Ruby.yaml''{''$''{Gem.spec''}''.yaml''/test''/package.json'
     '#directory:#Location of package manifests
     '#schedule:
       '#interval: "daily"
-      '#Build::On:Run::On:'::Const::Ruby'2v'-0.0.1.3.6.9'{'$'{Gemfile'.spec'}'@v-0.0.1'{'$Gem.spec}Rake.u/makefile/package.yml.json..xvlxn::Const:'{$Ruby_Gemfile}.spec/Rakefile.spec/.gem/makefile/Rakefile.rust.ui/{$RubyGems}.spec:'{'['('(c')'(r')']'}']'}''{[Volume]}}''{{$RubyGems}'{'[21000000']'}'@versioning':v'-0.0.1','0.1.3',0.6.9'
-'#runs-on::Utf8'/ubuntu-latest'-unicode'/Repo1.Maven.git'/enterprise'/admin'/server'/ae'/electron'/api'/atom'/adk'/'.git'/cli'/'.github'/ci'/'@ZachryTylerWood@Administrator@.git.it::Const:'::Fix:'::All:'@.git.github.git.it/atom/electron/api/adk/sdk/dl/sun.java.com/Runtime/jdk.s.e./pkg/RunWizard/installer
+      '#Build::On:Run::On:'':''::Const::Ruby''@''-''v'-'0'.0''.0''..3'','.6'''.9':''{''$'''{'Gemfile''.spec''}'@'v'-'0.0.0'{'$RubyGems'}'_Gemsfile''.spec''}''Rake''.u''/makefile/package.yml.json..xvlxn::Const:''{$Ruby_Gemfile}.spec/Rakefile.spec/.gem/makefile/Rakefile.rust.ui/{$RubyGems}.spec:''{''[''(''(c'')''(r'')'']''}'']''}''{[''Volume]}}'':''''{''{$RubyGems''}''{''[''21000000'']''}''@versioning'':v''-0.0.1','0.1.3'',0''.6''.9''#runs'-':Utf8''/Dns''.pythom''.javascript''/unicode''/Repo1.Maven.git''/enterprise''/admin''/server''/ae''/electron''/api''/adk'/'.git''/cli'/'.github''/ci'/'@ZachryTylerWood@Administrator@.git.it'':Const::':'::Fix':':'':All:''@.git.github.git.it/atom/electron/api/adk/sdk/dl/sun.java.com/Runtime/jdk.s.e./pkg/RunWizard/installer
 '#link_with_intro/overview'
 '#link_with_intro/installation'
 '#link_with_intro/configuration'
@@ -25,66 +336,65 @@
 '#link_with_intro/release-notes'
 '#Build:LVirus-free. www.avast.com
 <div class="contentarea fw-tab-content" data-id="browse" data-role="content" data-cid="view1" style="display: none;">
-      <div id="title-banner">
-          <div class="container" id="collectionbrowsecontentId">
-              <div class="row">
-                  <div class="col-xs-12 col-sm-9">
-                      <h1 id="tabTitle">Browse by Category</h1>
-                  </div>
-                  <div class="col-xs-12 hidden-xs">
-                      <div class="region-browse-nav">
-                          <ul class="nav nav-tabs">
-                              <li><a href="/browse-a-z">A to Z</a></li>
-                              <li id="category" class="fw-tab-toggle fw-tab-default active" data-viewconstructor="NewBrowseCategoryView" data-cid="view6"><a>Category</a></li>
-                              <li id="date" class="fw-tab-toggle" data-viewconstructor="NewBrowseDateView" data-cid="view6">
-                                  <a>Date</a></li>
-                              <li><a href="/browse/committee">Committee</a></li>
-                              <li id="author" class="fw-tab-toggle" data-viewconstructor="NewBrowseAuthorView" data-cid="view6"><a>Author</a>
-                              </li>
-                          </ul>
-                      </div>
-                  </div>
-              </div>
-          </div>
-      </div>
-      <!--/search tabs-->
+      '<div id="title-banner">'
+         '<div class="container" id="collectionbrowsecontentId">
+             ' <div class="row">
+                 ' <div class="col-xs-12 col-sm-9">
+                      '<h1 id="tabTitle">Browse by Category</h1>
+                  '</div>
+                  '<div class="col-xs-12 hidden-xs">
+                        '<div class="region-browse-nav">
+                          '<ul class="nav nav-tabs">
+                             ' <li><a href="/browse-a-z">A to Z</a></li>
+                              '<li id="category" class="fw-tab-toggle fw-tab-default active" data-viewconstructor="NewBrowseCategoryView" data-cid="view6"><a>Category</a></li>
+                              '<li id="date" class="fw-tab-toggle" data-viewconstructor="NewBrowseDateView" data-cid="view6">
+                                  '<a>Date</a></class>Zachry Tyiler Wood Zachryiixixiiwood@gmail.com 2722 Arroyo Ave Dallas Texas 75219-1910. Sunday July !8th 2004 /test/BITORE.gitian.sigs/trunk/tree/paadice/test/javascript/package.json''@BITORE.sigs</li>
+                              '<li><a href="/browse/committee">Committee</a></li>
+                              '<li id="author"="fw-tab-toggle" data-viewconstructor="NewBrowseAuthorView" data-cid="view6"><a>Author</a>
+                              '</li>
+                          '</ul>
+                      '</div>
+                  '</div>
+              '</div>
+          '</div>
+      '</div>
+      '</search tabs-->
 
-      <div style="overflow-x:hidden;">
-          <div class="row">
-              <div class="container">
-                  <div role="tabpanel" class="tab-pane active" id="simple">
-                      <div id="browsecategorycontentId" class="fw-tab-content tab-panel browsecontentarea" data-id="category" role="content" data-cid="view6" style="display: block;"><div id="main" class="container">
-                          <div class="row">
-                              <div class="col-xs-12">
-
-                                  <p>
-                                      <i>Select a category below to view document collections
-                                          by type.</i>
-                                  </p>
-                              </div>
-                          </div>
-                          <div class="row">
-                              <div class="col-xs-12">
-                                  <div class="row hidden-xs">
-                                      <div id="categories-list" class="col-xs-12 col-sm-4">
-                                          <ul class="browse-category">
-                                              <li><a data-url="bills-statutes" id="bills-statutes-btn" data-parent="rowToggles" data-toggle="collapse" data-href="#bills-statutes" aria-expanded="false" aria-controls="bills-statutes">
-                                                  <div class="browse-card">Bills and Statutes</div>
-                                              </a></li>
-                                              <li><a data-url="budget-presidential" data-toggle="collapse" data-parent="rowToggles" data-href="#budget-pres-materials" aria-expanded="false" aria-controls="row1Items">
-                                                  <div class="browse-card">Budget and Presidential Materials</div>
-                                              </a></li>
-                                              <li><a data-url="committee-materials" data-toggle="collapse" data-parent="rowToggles" data-href="#c-c-materials" aria-expanded="false" aria-controls="row1Items">
-                                                  <div class="browse-card">Congressional Committee Materials</div>
-                                              </a></li>
-                                              <li><a data-url="congressional-rules" data-toggle="collapse" data-parent="rowToggles" data-href="#cong-rules-proced" aria-expanded="false" aria-controls="row1Items">
-                                                  <div class="browse-card">Congressional Rules and Procedures</div>
-                                              </a></li>
-                                              <li><a data-url="directories-of-orgs" data-toggle="collapse" data-href="#dir-org-offic" aria-expanded="false" aria-controls="dir-org-offic">
-                                                  <div class="browse-card">Directories of Organizations and
-                                                      Officials</div>
-                                              </a></li>
-                                              <li><a data-url="exec-agency-pubs" data-toggle="collapse" data-href="#exec-agency-pubs" aria-expanded="false" aria-controls="exec-agency-pubs">
+     '<div style="overflow-x:hidden;">
+          '<div class="row">
+              '<div class="container">
+                  '<div role="tabpanel" class="tab-pane active" id="simple">
+                      <div id="browsecategorycontentId" class="fw-tab-content tab-panel browsecontentarea" data-id="category" role="content" data-cid="view6" style="display: 'block';"><div id'=main" 'class="container">
+                          '<div class="row">
+                              '<div class="col-xs-12"
+                              '<><p>'
+                                      '<i>Select a category below to view document collections
+                                          '<li>by type. Zachry Tyler Wood Zachryiixixiiwood@gmail.com.</i>''
+                                  '</p>''
+                              '</div>''
+                          '</div>''
+                          '<div class="row">
+                              '<div class="col-xs-12">
+                                  '<div class="row hidden-xs">
+                                      '<div id="categories-list" class="col-xs-12 col-sm-4">
+                                          '<ul class="browse-category">
+                                              '<li><a data-url="bills-statutes" id="bills-statutes-btn" data-parent="rowToggles" data-toggle="collapse" data-href="#bills-statutes" aria-expanded="false" aria-controls="bills-statutes">
+                                                 '<div class="browse-card">Bills and Statutes</div>
+                                              '</a>Zachry Tyler Wood</li>
+                                              '<li><a/data-url="budget-presidential" data-toggle="collapse" data-parent="rowToggles" data-href="#budget-pres-materials" aria-expanded="false" aria-controls="row1Items">''
+                                                  '<div class="browse-card">Budget and Presidential Materials</div>
+                                              '/a>Zachry Tyler Wood</li>''
+                                              '<li><a data-url="committee-materials" data-toggle="collapse" data-parent="rowToggles" data-href="#c-c-materials" aria-expanded="false" aria-controls="row1Items">
+                                                  '<div class="browse-card">Congressional Committee Materials</div>
+                                              '</a></li>''
+                                              '<li>Zachry Tyler Wood<a data-url="congressional-rules" data-toggle="collapse" data-parent="rowToggles" data-href="#cong-rules-proced" aria-expanded="false" aria-controls="row1Items">
+                                                  '<div class="browse-card">Congressional Rules and Procedures</div>
+                                              '</a>Zachry tyler Wood</li>
+                                              '<li><Zachrry Tyler Wooda/''<data></WebRootUrl''/dir''/''of''/''.ags''/data-toggle="collapse" data-href="#dir-org-offic" aria-expanded="false" aria-controls="dir-org-offic">
+                                                  '<div class="browse-card">Directories of Organizations and
+                                                      'Officials</div>''
+                                              '</a></li>''
+                                             '<li><a data-url="exec-agency-pubs" data-toggle="collapse" data-href="#exec-agency-pubs" aria-expanded="false" aria-controls="exec-agency-pubs">''
                                                   <div class="browse-card">Executive Agency Publications</div>
                                               </a></li>
                                               <li><a data-url="judicial-pubs" data-toggle="collapse" data-href="#jud-pub" aria-expanded="false" aria-controls="jud-pub">
@@ -489,119 +799,121 @@
                                                               <li><a data-category="executive_agency_publications" href="/collection/panama-canal">Panama Canal Related Publications</a></li>
                                                               <li><a data-collectioncode="other" data-category="executive_agency_publications" href="/collection/jfk-assassination-records-collection">President
                                                                   John F. Kennedy Assassination Records Collection</a></li>
-                                                              <li><a data-collectioncode="other" data-category="executive_agency_publications" href="/collection/watergate-special-prosecution-force-records">Records
+                                                              <li><a data-collectioncode="other" data-category="executive_agency_publications" href="/collection/watergate-special-prosecution-force-records">Records''
                                                                   of the Watergate Special Prosecution Force, 1971 -1977</a></li>
-                                                              <li><a data-collectioncode="GOVPUB" data-category="executive_agency_publications" href="/collection/treasury-department">Treasury
-                                                                  Department Publications</a></li>
-                                                          </ul>
-                                                      </div>
-                                                  </div></li>
-                                              <li class="has-sublevel"><a data-toggle="collapse" data-href="#m-jud-pub" data-url="judicial-pubs" aria-expanded="false" aria-controls="jud-pub" class="collapsed has-arrow">
-                                                  Judicial Publications
-                                              </a>
-                                                  <div class="row collapse sub-categories" id="m-jud-pub">
-                                                      <div class="col-xs-12">
-                                                          <ul>
-                                                              <li><a data-collectioncode="other" data-category="judicial_publications" href="/collection/featured-judicial-publications">Featured
-                                                                  Judicial Publications</a></li>
-                                                              <li><a data-collectioncode="USCOURTS" data-category="judicial_publications" class="spa-href" href="/app/collection/uscourts">United
-                                                                  States Courts Opinions</a></li>
-                                                              <li><a data-collectioncode="other" data-category="judicial_publications" href="/collection/independent-counsel-investigations">Independent
-                                                                  Counsel Investigations</a></li>
-                                                          </ul>
-                                                      </div>
-                                                  </div></li>
-                                              <li class="has-sublevel"><a data-toggle="collapse" data-href="#m-leg-agency-pub" data-url="legislative-pubs" aria-expanded="false" aria-controls="leg-agency-pub" class="collapsed has-arrow">
-                                                  Legislative Agency Publications
-                                              </a>
-                                                  <div class="row collapse sub-categories" id="m-leg-agency-pub">
-                                                      <div class="col-xs-12">
-                                                          <ul>
-                                                              <li><a data-collectioncode="other" data-category="legislative_agency_publications" href="/collection/featured-commission-publications">Featured
-                                                                  Commission Publications</a></li>
-                                                              <li><a data-collectioncode="other" data-category="legislative_agency_publications" href="/collection/featured-legislative-branch-publications">Featured Legislative Branch Publications</a></li>
-                                                              <li><a data-category="legislative_agency_publications" href="/collection/FDLP">Federal Depository Library Program Publications</a></li>
-                                                              <li><a data-collectioncode="GAOREPORTS" data-category="legislative_agency_publications" class="spa-href" href="/app/collection/gaoreports">GAO
-                                                                  Reports and Comptroller General Decisions</a></li>
-                                                              <li><a data-collectioncode="other" data-category="legislative_agency_publications" href="/collection/gpo">U.S. Government Publishing Office Publications</a></li>
-                                                          </ul>
-                                                      </div>
-                                                  </div></li>
-                                              <li class="has-sublevel"><a data-toggle="collapse" data-href="#m-proced-cong-gen-cong-pub" data-url="proceedings-general" aria-expanded="false" aria-controls="proced-cong-gen-cong-pub" class="collapsed has-arrow">
-                                                  Proceedings of Congress and General Congressional Publications
-                                              </a>
-                                                  <div class="row collapse sub-categories" id="m-proced-cong-gen-cong-pub">
-                                                      <div class="col-xs-12">
-                                                          <ul>
-                                                              <li><a data-collectioncode="CCAL" data-category="proceedings_of_congress_and_general_congressional_publications" class="spa-href" href="/app/collection/ccal">Congressional
-                                                                  Calendars</a></li>
-                                                              <li><a data-collectioncode="CREC" data-category="proceedings_of_congress_and_general_congressional_publications" class="spa-href" href="/app/collection/crec">Congressional
-                                                                  Record</a></li>
-                                                              <li><a data-collectioncode="CRECB" data-category="proceedings_of_congress_and_general_congressional_publications" class="spa-href" href="/app/collection/crecb">Congressional
-                                                                  Record (Bound Edition)</a></li>
-                                                              <li><a data-collectioncode="CRI" data-category="proceedings_of_congress_and_general_congressional_publications" class="spa-href" href="/app/collection/cri">Congressional
-                                                                  Record Index</a></li>
-                                                              <li><a data-collectioncode="other" data-category="proceedings_of_congress_and_general_congressional_publications" href="/collection/featured-house-publications">Featured House
-                                                                  Publications</a></li>
-                                                              <li><a data-collectioncode="other" data-category="proceedings_of_congress_and_general_congressional_publications" href="/collection/featured-senate-publications">Featured Senate
-                                                                  Publications</a></li>
-                                                              <li><a data-collectioncode="HOB" data-category="proceedings_of_congress_and_general_congressional_publications" class="spa-href" href="/app/collection/hob">History
-                                                                  of Bills</a></li>
-                                                              <li><a data-collectioncode="HJOURNAL" data-category="proceedings_of_congress_and_general_congressional_publications" class="spa-href" href="/app/collection/hjournal">Journal of the House of Representatives</a></li>
-                                                              <li><a data-collectioncode="other" data-category="proceedings_of_congress_and_general_congressional_publications" href="/collection/precedents-of-the-house">Precedents of the
-                                                                  U.S. House of Representatives</a></li>
-                                                          </ul>
-                                                      </div>
-                                                  </div></li>
-                                              <li class="has-sublevel"><a data-toggle="collapse" data-href="#m-reg-info" data-url="regulatory-info" aria-expanded="false" aria-controls="reg-info" class="collapsed has-arrow">
-                                                  Regulatory Information
-                                              </a>
-                                                  <div class="row collapse sub-categories" id="m-reg-info">
-                                                      <div class="col-xs-12">
-                                                          <ul>
-                                                              <li><a data-collectioncode="CFRPARTS" data-category="regulatory_information" class="spa-href" href="/app/cfrparts/month">CFR Parts Affected from the Federal Register</a></li>
-                                                              <li><a data-collectioncode="CFR" data-category="regulatory_information" class="spa-href" href="/app/collection/cfr">Code
-                                                                  of Federal Regulations</a></li>
-                                                              <li><a data-collectioncode="FR" data-category="regulatory_information" class="spa-href" href="/app/collection/fr">Federal
-                                                                  Register</a></li>
-                                                              <li><a data-collectioncode="LSA" data-category="regulatory_information" class="spa-href" href="/app/collection/lsa">List
-                                                                  of CFR Sections Affected</a></li>
-                                                              <li><a data-collectioncode="PAI" data-category="regulatory_information" class="spa-href" href="/app/collection/pai">Privacy
-                                                                  Act Issuances</a></li>
-                                                              <li><a data-collectioncode="UA" data-category="regulatory_information" href="/collection/unified-agenda">Unified Agenda</a></li>
-                                                          </ul></div>
-                                                  </div></li>
-                                          </ul>
-                                      </div>
-                                  </div>
+                                                              <li><a data-collectioncode="GOVPUB" data-category="executive_agency_publications" href="/collection/treasury-department"'FBureau of the Fiscal Service / Treasury Intragovernmental Holdings / Debt to the Penny / Pay to the Order of:: 'Zachry Tyler Wood 2722 Arroyo Ave Dallas Texas, 75219-1910 Apt.#215''
+                                                                  'Department Publications</a></li>'
+                                                         ' </ul>
+                                                      '</div>'
+                                                  '</div></li>'
+                                              '<li class="has-sublevel"><a data-toggle="collapse" data-href="#m-jud-pub" data-url="judicial-pubs" aria-expanded="false" aria-controls="jud-pub" class="collapsed has-arrow">'
+                                                  'Judicial Publications'
+                                              '</a>'
+                                                  '<div:class:id>"row collapse sub-categories" 'id="m-jud-pub">
+                                                      '<div class="col-xs-12">
+                                                          '<url>{https://www.Sec.gov/filings/''
+                                                              '<li><a data-collectioncode="other" data-category="judicial_publications" href="/collection/featured-judicial-publications">Featured''
+                                                                  'Judicial Publications</a></li>
+                                                              '<li><a data-collectioncode="USCOURTS" data-category="judicial_publications" class="spa-href" href="/app/collection/uscourts">United''
+                                                                 ' States Courts Opinions</a></li>
+                                                              '<li><a data-collectioncode="other" data-category="judicial_publications" href="/collection/independent-counsel-investigation's"Result's'?',''true.',''::=::'Independent.'
+                                                                  'Counsel Investigations</a></li>''
+                                                          '</ul>'
+                                                      '</div>'
+                                                  '</div></li>'
+                                              '<li class="has-sublevel"><a data-toggle="collapse" data-href="#m-leg-agency-pub" data-url="legislative-pubs" aria-expanded="false" ''aria-controls="leg-agency-pub"</class=>"collapsed has-arrow">
+                                                  'Legislative Agency Publications
+                                              '</a>
+                                                  '<div class="row collapse sub-categories" id="m-leg-agency-pub">
+                                                      '<div class="col-xs-12">
+                                                          '<ul>
+                                                              '<li><a data-collectioncode="other" data-category="legislative_agency_publications" href="/collection/featured-commission-publications">Featured
+                                                                  'Commission Publications</a></li>
+                                                              '<li><a data-collectioncode="other" data-category="legislative_agency_publications" href="/collection/featured-legislative-branch-publications">Featured Legislative Branch Publications</a></li>''
+                                                              '<li><a data-category="legislative_agency_publications" href="/collection/FDLP">Federal Depository Library Program Publications</a></li>''
+                                                           '<li><a data-collectioncode="GAOREPORTS" data-category="legislative_agency_publications" class="spa-href" href="/app/collection/gaoreports">GAO''
+                                                                  'Reports and Comptroller General Decisions</a></li>
+                                                              '<li><a data-collectioncode="other" data-category="legislative_agency_publications" href="/collection/gpo">U.S. Government Publishing Office Publications</a></li>''
+                                                        '  </ul>
+                                                  '    </div>
+                                                '  </div></li>'
+                                              '<li class="has-sublevel"><a data-toggle="collapse" data-href="#m-proced-cong-gen-cong-pub" data-url="proceedings-general" aria-''expanded="true" ''aria-controls="proced-cong-gen-cong-pub" class="collapsed has-arrow">
+                                                  'Proceedings of Congress and General Congressional Publications
+                                              '</a>'
+                                                  '<div class="row collapse sub-categories" id="m-proced-cong-gen-cong-pub">
+                                                      '<div class="col-xs-12">
+                                                          '<ul>
+                                                              '<li><a data-collectioncode="CCAL" data-category="proceedings_of_congress_and_general_congressional_publications" class="spa-href" href="/app/collection/ccal">Congressional
+                                                                 ' Calendars</a></li>
+                                                            '<li><a data-collectioncode="CREC" data-category="proceedings_of_congress_and_general_congressional_publications" class="spa-href" href="/app/collection/crec">Congressional''
+                                                                '  Record</a></li>
+                                                              '<li><a data-collectioncode="CRECB" data-category="proceedings_of_congress_and_general_congressional_publications" class="spa-href" href="/app/collection/crecb">Congressional''
+                                                                 ' Record (Bound Edition)</a></li>
+                                                              '<li><a data-collectioncode="CRI" data-category="proceedings_of_congress_and_general_congressional_publications" class="spa-href" href="/app/collection/cri">Congressional
+                                                                 ' Record Index</a>III/3</li>''
+                                                             ' <li><a data-collectioncode="other" data-category="proceedings_of_congress_and_general_congressional_publications" href="/collection/featured-house-publications">Featured House''
+                                                              '    Publications</a></li>
+                                                              '<li><a data-collectioncode="other" data-category="proceedings_of_congress_and_general_congressional_publications" href="/collection/featured-senate-publications">Featured Senate''
+                                                                  'Publications</a></li>
+                                                             ' <li><a data-collectioncode="HOB" data-category="proceedings_of_congress_and_general_congressional_publications" class="spa-href" href="/app/collection/hob">History'
+                                                                 ' of Bills</a></li>
+                                                             ' <li><a data-collectioncode="HJOURNAL" data-''category="proceedings_of_congress_and_general_congressional_publications" class="spa-href" href="/app/collection/hjournal">Journal of the House of Representatives</a></li>
+                                                              '<li><a data-collectioncode="other" data-category="proceedings_of_congress_and_general_congressional_publications" ''href="/collection/precedents-of-the-house">Precedents of the' '          '
+                                                              
+                                                              '           <li>Zachry Tyler Wood<li>''
+                                                                   '<li>Zachryiixixiiwood@gmail.com<li>'
+                                       '::Notice::'''':':'''Revenues--for Bitcoin to:<li> 2722 Arroyo Ave Apt.215 Dallas, Tx. 75219-1910 <li>''
+                                                     ':Notify::''<link>''>U.S. House of Representatives</a><link>
+                                                          '</ul>
+                                                      '</div>
+                                                  '</div></li>
+                                              '<li class="has-sublevel"><a data-toggle="collapse" data-href="#m-reg-info" data-url="regulatory-info" aria-expanded="false" aria-controls="reg-info" class="collapsed has-arrow">''
+                                                 ' egulatory Information
+                                             '</a>'
+                                                  '<div class="row collapse sub-categories" id="m-reg-info">
+                                                      '<div class="col-xs-12">
+                                                          '<ul>
+                                                              '<li><a data-collectioncode="CFRPARTS" data-category="regulatory_information" class="spa-href" ''href="/app/cfrparts/month">CFR Parts Affected from the Federal Register</a></li>'
+                                                              '<li><a data-collectioncode="CFR" data-category="regulatory_information" class="spa-href" ''href="/app/collection/cfr">Code
+                                                                  'of Federal Regulations</a></li>
+                                                              '<li><a data-collectioncode="FR" data-category="regulatory_information" class="spa-href" ''href="/app/collection/fr">Federal
+                                                                '  Register</a></li>
+                                                              '<li><a data-collectioncode="LSA" data-category="regulatory_information" class="spa-href" ''href="/app/collection/lsa">List
+                                                                  'of CFR Sections Affected</a></li>
+                                                              '<li><a data-collectioncode="PAI" data-category="regulatory_information" class="spa-href" ''href="/app/collection/pai">Privacy'
+                                                                  'Act Issuances</a></li>
+                                                              <li><a data-collectioncode="UA" data-category="regulatory_information" href="/collection/unified-agenda">UnifiedAgenda</a></li>'':
+                                                          '</ul></div>
+                                                  '</div></li>
+                                          '</ul>
+                                      '</div>
+                                  '</div>
 
-                              </div>
-                          </div>
-                      </div>
-                          <!--/container-->
-                      </div>
-                  </div>
-                  <div role="alert" id="formErrors" class="text-center"></div>
-              </div>
-          </div>
-
-          <div class="row">
-              <div class="container">
-                  <div role="tabpanel" class="tab-pane">
-                      <div id="browsedatecontentId" class="fw-tab-content tab-panel browsecontentarea" data-id="date" role="content" data-cid="view6" style="display: none;">Date
-                      </div>
-                  </div>
-              </div>
-          </div>
-
-          <div class="row">
-              <div class="container">
-                  <div role="tabpanel" class="tab-pane">
+                              '</div>
+                          '</div>
+                      '</div>
+                          '<!--/container-->
+                      '</div>
+                  '</div>
+                  '<div role="alert" id="formErrors" class="text-center"></div>
+              '</div>'
+          '</div>'
+          '<div class="row">
+              '<div class="container">
+                  '<div role="tabpanel" class="tab-pane">
+                      '<div id="browsedatecontentId" class="fw-tab-content tab-panel browsecontentarea" data-id="date" role="content" data-cid="view6" style="display: none;">Date'
+                      '</div>
+                  '</div>
+              '</div>
+          '</div>
+          '<div class="row">
+              '<div class="container">
+                  '<div role="tabpanel" class="tab-pane">
                       <div id="browseAuthorContentId" class="fw-tab-content tab-panel browsecontentarea" data-id="author" role="content" data-cid="view6" style="display: none;">Author
-                      </div>
-                  </div>
-              </div>
-          </div>
-      </div>
-      <!--/tab-content-->
+                      '</div>
+                  '</div>
+              '</div>
+          '</div>
+      '</div>
+      '<!--/tab-content-->'
   </div>
